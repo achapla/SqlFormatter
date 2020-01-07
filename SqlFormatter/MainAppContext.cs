@@ -1,5 +1,6 @@
 ﻿using SqlFormatter.Properties;
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows.Forms;
 
@@ -31,19 +32,23 @@ namespace SqlFormatter
         {
             BuildMenuItems(contextMenuStrip);
             AddSeparator(contextMenuStrip);
+            AddDevArtMenuItem(contextMenuStrip);
+            AddSeparator(contextMenuStrip);
             AddExitMenuItem(contextMenuStrip);
         }
 
         private void BuildMenuItems(ContextMenuStrip contextMenuStrip)
         {
-            ToolStripMenuItem optionsMenu = new ToolStripMenuItem("Options");
+            foreach (var formatOption in sqlFormatter.UserFormatOptions)
+            {
+                ToolStripMenuItem optionsMenu = new ToolStripMenuItem(formatOption.Title);
 
-            AddChilds(optionsMenu, sqlFormatter.UserFormatOptions);
-
-            contextMenuStrip.Items.Add(optionsMenu);
+                PrepareChildMenuItems(optionsMenu, formatOption.Childs.ToArray());
+                contextMenuStrip.Items.Add(optionsMenu);
+            }
         }
 
-        private void AddChilds(ToolStripMenuItem optionsMenu, SqlFormatOption[] formatOptions)
+        private void PrepareChildMenuItems(ToolStripMenuItem optionsMenu, SqlFormatOption[] formatOptions)
         {
             foreach (var formatOption in formatOptions)
             {
@@ -56,7 +61,7 @@ namespace SqlFormatter
                     formatOptionMenu.Click += FormatOptionMenu_Click;
 
                 if (formatOption.Childs.Count > 0)
-                    AddChilds(formatOptionMenu, formatOption.Childs.ToArray());
+                    PrepareChildMenuItems(formatOptionMenu, formatOption.Childs.ToArray());
 
                 optionsMenu.DropDownItems.Add(formatOptionMenu);
             }
@@ -71,6 +76,19 @@ namespace SqlFormatter
         private void AddSeparator(ContextMenuStrip contextMenuStrip)
         {
             contextMenuStrip.Items.Add(new ToolStripSeparator());
+        }
+
+        private void AddDevArtMenuItem(ContextMenuStrip contextMenuStrip)
+        {
+            ToolStripMenuItem devartMenuItem = new ToolStripMenuItem("Powered by Devart");
+            devartMenuItem.Click += DevartMenuItem_Click; ;
+
+            contextMenuStrip.Items.Add(devartMenuItem);
+        }
+
+        private void DevartMenuItem_Click(object sender, EventArgs e)
+        {
+            Process.Start("https://sql-format.com/");
         }
 
         private void AddExitMenuItem(ContextMenuStrip contextMenuStrip)

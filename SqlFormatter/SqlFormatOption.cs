@@ -4,7 +4,7 @@ using System.Diagnostics;
 
 namespace SqlFormatter
 {
-    [DebuggerDisplay("{NodeId}:{Title}")]
+    [DebuggerDisplay("{n}:{t}")]
     public class SqlFormatOption
     {
         [JsonProperty("t")]
